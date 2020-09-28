@@ -59,11 +59,16 @@ module.exports = function check(str, bracketsConfig) {
   console.log(`50: ${strArray}`);
   strArray = strArray.map((i, index, arr) => {
     console.log(`54: ${i}; ${typeof i}`);
-    console.log(`53: ${nextOption[0]}`);
+    console.log(`53: ${nextOption}`);
     console.log(nextOption.length);
-    console.log(`56: ${nextOption[nextOption.length - 1]}; ${typeof nextOption[nextOption.length - 1]}`);
-    console.log(`55: ${nextOption[nextOption.length - 1].includes(i)}`);
-    if (nextOption[nextOption.length - 1].includes(i)) {
+    console.log(`56: ${nextOption[nextOption.length - 1]}; ${nextOption[nextOption.length - 1] instanceof Array}`);
+    console.log(`55: ${nextOption[nextOption.length - 1].map((ii, index) => {
+      console.log(`66: ${ii}`);
+      console.log(`index: ${index}`);
+      console.log(`68: ${ii.includes(i)}`);
+      return i;
+    })}`);
+    if (nextOption[nextOption.length - 1].filter((ii) => ii.includes(i)).length !== 0) {
       if (ifIsOpen(i)) {
         console.log(`${i} is open`);
         nextOption.push(nextStepOptions(i));
@@ -79,4 +84,15 @@ module.exports = function check(str, bracketsConfig) {
     return i;
   });
   console.log(`80: ${strArray}`);
+  console.log(`87: ${nextOption}`);
+  console.log(`87: ${nextOption.length}`);
+  nextOption.map((i) => {
+    console.log(i);
+    return i;
+  });
+  return strArray.filter((i) => {
+    // console.log(`88: ${i}`);
+    // console.log(`89: ${i === true}`);
+    return (i === true);
+  }).length === strArray.length && nextOption.length === 1;
 }
