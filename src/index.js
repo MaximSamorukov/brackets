@@ -5,6 +5,7 @@ module.exports = function check(str, bracketsConfig) {
   const strArray = string.split('');
 
   function isEqualWithOpposite(str) {
+    // console.log(str);
     const result = brConf.filter((i) => i.includes(str))[0].filter((i) => i === str).length;
     return result === 2;
   }
@@ -15,7 +16,6 @@ module.exports = function check(str, bracketsConfig) {
 
   function returnOpposite(str) {
     const result = brConf.filter((i) => i.includes(str))[0].filter((i) => i !== str);
-    // console.log(result)
     return result[0];
   }
 
@@ -24,115 +24,98 @@ module.exports = function check(str, bracketsConfig) {
     return result;
   }
 
+
+
   function bracketSolver(arr) {
-    let lastIndex = 0;
+    let boolResult = true;
+    if (arr.length === 0) {
+      boolResult = true;
+      return boolResult;
+    }
+    function setFalse(str) {
+      boolResult = boolResult === false ? false : str;
+    }
+
     let count = 0;
     let innerChunk = '';
-    let firstElement = arr[0];
-    let lastElement = '';
-    return arr.map((i, index, arry) => {
-      if (arry.length < 2) {
-        return false;
-      }
-      console.log(`i: ${i}; index: ${index}; array: ${arry}`);
+    let firstElementIndex = 0;
+    let firstElement = arr[firstElementIndex];
+    let flag = isEqualWithOpposite(firstElement);
+    let lastElementIndex = firstElementIndex;
 
-      if (index === 0 && isEqualWithOpposite(i)) {
-        lastIndex = arr.lastIndexOf(i);
-        count += 1;
-        return true;
-      }
-      if (index !== 0 && isEqualWithOpposite(firstElement) && index !== lastIndex) {
-        count += 1;
-        innerChunk += i;
-        return true;
-      }
-      if (index !== 0 && isEqualWithOpposite(firstElement) && index === lastIndex) {
-        count += 1;
-        const n = innerChunk;
-        console.log(`48: ${n}`);
-        innerChunk = '';
-        if (n.split('').length > 0) {
-          return bracketSolver(n.split(''));
-        } else {
-          return true;
-        }
+    let returnValue = arr.map((i, ind, ar) => {
+      if (ind > firstElementIndex && ind <= lastElementIndex && flag) {
+        return i;
+      } else {
 
-      }
-      if (index !== 0 && isEqualWithOpposite(firstElement) && index === arry.length - 1 && (count % 2 !== 0)) {
-
-        return false;
-      }
-
-      if (index === 0 && ifBracketIsOpen(i)) {
-        count += 1;
-        console.log(`35 count: ${count}`);
-        return true;
-      }
-
-      else if (index === 0 && !ifBracketIsOpen(i)) {
-        console.log(`40`);
-        return false;
-      };
-      if (index !== 0 && (i[0] === firstElement)) {
-        count += 1;
-      }
-      else if (index !== 0 && (i[0] === returnOpposite(firstElement))) {
-
-        count -= 1;
-        console.log(`47 count: ${count}`);
-        if (count === 0) {
-          const retV = innerChunk;
-          innerChunk = '';
-          if (index !== arry.length - 1) {
-            firstElement = arry[index + 1];
-            if (!ifBracketIsOpen(firstElement)) {
-              return false;
+        if (flag) {
+          lastElementIndex = arr.lastIndexOf(firstElement);
+          if (lastElementIndex === firstElementIndex || arr.length % 2 !== 0) {
+            setFalse(false);
+          } else {
+            innerChunk = arr.slice(firstElementIndex + 1, lastElementIndex);
+            if (innerChunk.length === 0) {
+              setFalse(true);
+            } else if (innerChunk.length === 1) {
+              setFalse(false);
+            }
+            else {
+              setFalse(bracketSolver(innerChunk));
+              innerChunk = '';
+              return i;
             }
           }
-
-          if (retV.length === 0) {
-            return true;
-          } else {
-            return bracketSolver(retV.split(''));
-          }
-
-        }
-        else if (count > 0) {
-          innerChunk += i;
         } else {
-          console.log(`58`);
-          return false;
+
+          if (arr.length === 0) {
+            setFalse(true);
+          } else if (arr.length % 2 !== 0) {
+            setFalse(false);
+          } else {
+            if (ind === firstElementIndex) {
+              if (ifBracketIsOpen(i)) {
+                count += 1;
+                setFalse(true);
+              } else {
+                setFalse(false);
+              }
+            };
+            if (ind !== firstElementIndex) {
+              if (i === returnOpposite(firstElement)) {
+                count -= 1;
+                if (count === 0) {
+                  setFalse(bracketSolver(innerChunk.split('')));
+                  innerChunk = '';
+                  if (ind < arr.length - 1) {
+                    firstElementIndex = ind + 1;
+                    firstElement = arr[firstElementIndex];
+                    flag = isEqualWithOpposite(firstElement);
+                  }
+                } else {
+                  innerChunk += i;
+                }
+              } else if (i === firstElement) {
+                count += 1;
+                innerChunk += i;
+              } else {
+
+                if (count === 0) {
+                  firstElementIndex === ind;
+                  firstElement = i;
+                } else {
+                  innerChunk += i;
+                }
+              }
+            }
+          }
         }
-      }
-      if (index === arry.length - 1 && (i !== returnOpposite(firstElement))) {
-        console.log(`62 i: ${i}`);
-        console.log(`62': ${returnOpposite(firstElement)}`);
-        console.log(i !== returnOpposite(firstElement));
-
-        console.log(`63`);
-        return false;
 
       }
-      if (count === 0 && (i === firstElement) && index !== 0) {
 
-        count += 1;
-      }
-      if (index !== 0) {
-        return i;
-      }
 
     })
-
+    return boolResult;
   }
 
-  let ss = bracketSolver(str.split(''));
-  console.log(`ss: ${ss}`);
-  ss = ss.filter((i) => {
-    console.log(i);
-    console.log(i === false);
-    return (i !== true);
-  });
-  console.log(`ss: ${ss}`);
-  return ss.length === 0;
-  console.log(bracketSolver(str.split('')));
+  return bracketSolver(str.split(''));
 }
